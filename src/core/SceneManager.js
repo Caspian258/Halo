@@ -43,7 +43,7 @@ export class SceneManager {
     try {
       const dome = new BABYLON.PhotoDome(
         "spaceDome",
-        "./assets/models/space.jpg",
+        "./assets/space.jpg",
         { resolution: 32, size: 1000, useDirectMapping: false },
         scene
       );

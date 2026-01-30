@@ -60,14 +60,18 @@ export class SimulationManager {
   }
 
   launchModule(ModuleClass, config = {}) {
+    console.log("🚀 LaunchModule called with:", ModuleClass?.name, config);
+    
     if (!this.activeHub) {
       console.error("No Active Hub selected");
       return;
     }
 
     const targetPos = this.findFreeSlot(this.activeHub);
+    console.log("📍 Target position found:", targetPos);
 
     if (!targetPos) {
+      console.warn("No free slot available");
       if (this.sceneManager.uiManager) {
         this.sceneManager.uiManager.showWarningToast("HUB COMPLETO. Active otro nodo.");
       }
@@ -75,7 +79,9 @@ export class SimulationManager {
     }
 
     // Instanciar
+    console.log("🔧 Creating module instance...");
     const module = new ModuleClass(this.sceneManager.scene, targetPos);
+    console.log("✅ Module created:", module);
     
     // Rotación Geométrica
     module.mesh.rotation.y = Math.PI / 6;
