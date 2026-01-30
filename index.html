@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fábrica Espacial Modular (Digital Twin) — Babylon.js</title>
+
+    <!-- Google Fonts: Roboto (UI) y JetBrains Mono (datos técnicos) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+    <!-- FontAwesome para iconos profesionales -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- Babylon.js (CDN oficial, apunta a la versión estable más reciente) -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  </head>
+  <body>
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- Sidebar Izquierdo: Menú de Módulos -->
+    <aside id="sidebar">
+      <button id="btn-graphene" class="module-card">
+        <i class="fa-solid fa-cube" style="color: #2563eb;"></i>
+        <span>Grafeno (Conductores)</span>
+      </button>
+      <button id="btn-zblan" class="module-card">
+        <i class="fa-solid fa-lightbulb" style="color: #d946ef;"></i>
+        <span>Fibra ZBLAN (Óptica)</span>
+      </button>
+      <button id="btn-alloys" class="module-card">
+        <i class="fa-solid fa-gears" style="color: #f97316;"></i>
+        <span>Ti-Al Alloys (Estructuras)</span>
+      </button>
+      <button id="btn-ceramics" class="module-card">
+        <i class="fa-solid fa-shield-halved" style="color: #a8a29e;"></i>
+        <span>Cerámicas (Térmico)</span>
+      </button>
+      <button id="btn-bio" class="module-card">
+        <i class="fa-solid fa-dna" style="color: #10b981;"></i>
+        <span>Bio-Impresión (Tejido)</span>
+      </button>
+      <button id="btn-crystals" class="module-card">
+        <i class="fa-solid fa-gem" style="color: #06b6d4;"></i>
+        <span>Cristales Proteicos (Farma)</span>
+      </button>
+      <hr style="border: none; border-top: 1px solid #334155; margin: 10px 0;">
+      <button id="btn-hub-expansion" class="module-card" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 2px solid #e2e8f0;">
+        <i class="fa-solid fa-network-wired" style="color: #e2e8f0;"></i>
+        <span style="font-weight: 600;">Módulo de Expansión (HUB)</span>
+      </button>
+      <button id="btn-sim-fault" class="danger-btn">
+        <i class="fa-solid fa-triangle-exclamation"></i> SIMULAR FALLA
+      </button>
+    </aside>
+
+    <!-- Panel Derecho: Inspector de Datos -->
+    <aside id="inspector-panel" style="display: none;">
+      <div class="panel-header">
+        <i class="fa-solid fa-microchip"></i> MODULE INSPECTOR
+      </div>
+      
+      <div class="tabs">  <body>
+
+        <button class="tab-btn active" onclick="uiManager.switchTab('data')">TELEMETRY</button>
+        <button class="tab-btn" onclick="uiManager.switchTab('visual')">3D VIEW</button>
+      </div>
+      
+      <div id="tab-content-data" class="tab-content active">
+        <div id="inspector-data"></div>
+      </div>
+      
+      <div id="tab-content-visual" class="tab-content" style="display: none;">
+        <div style="width: 100%; height: 300px; border: 1px solid #334155; position: relative;">
+          <canvas id="mini-view" style="width: 100%; height: 100%; outline: none; touch-action: none;"></canvas>
+        </div>
+        <p class="hint-text" style="font-size: 0.8rem; color: #64748b; text-align: center; margin-top: 10px;">
+          <i class="fa-solid fa-mouse"></i> Arrastra para rotar • Rueda para zoom
+        </p>
+      </div>
+    </aside>
+
+    <!-- Panel Inferior: System Log -->
+    <footer id="system-log">
+      <div class="log-header">
+        <i class="fa-solid fa-terminal"></i>
+        SYSTEM LOG
+      </div>
+      <div id="log-content"></div>
+    </footer>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
