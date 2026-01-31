@@ -24,11 +24,13 @@ uiManager.log("System Initialized. Hub Connectivity: 100%", "SUCCESS");
 uiManager.log("Awaiting module deployment commands...", "INFO");
 
 const launch = (ModuleClass, name, colorHex, type = "MODULE") => {
+  console.log(`🎯 Launch button clicked: ${name}`);
   uiManager.log(`Sequence initiated: Launching ${name}`, "INFO");
   sceneManager.simulationManager.launchModule(ModuleClass, { name, color: colorHex, type });
 };
 
 document.getElementById("btn-graphene")?.addEventListener("click", () => {
+  console.log("Button graphene clicked");
   launch(GrapheneModule, "Grafeno", "#2563eb");
 });
 

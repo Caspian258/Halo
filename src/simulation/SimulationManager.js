@@ -60,14 +60,24 @@ export class SimulationManager {
   }
 
   launchModule(ModuleClass, config = {}) {
+    console.log("🚀 LaunchModule called with:", ModuleClass?.name, config);
+    
     if (!this.activeHub) {
       console.error("No Active Hub selected");
       return;
     }
 
+<<<<<<< HEAD
     const slotInfo = this.findFreeSlot(this.activeHub);
 
     if (!slotInfo) {
+=======
+    const targetPos = this.findFreeSlot(this.activeHub);
+    console.log("📍 Target position found:", targetPos);
+
+    if (!targetPos) {
+      console.warn("No free slot available");
+>>>>>>> a2f8c6fd8b579eecc22efd2f5650ac983a386a27
       if (this.sceneManager.uiManager) {
         this.sceneManager.uiManager.showWarningToast("HUB COMPLETO. Active otro nodo.");
       }
@@ -77,7 +87,9 @@ export class SimulationManager {
     const targetPos = slotInfo.position;
 
     // Instanciar
+    console.log("🔧 Creating module instance...");
     const module = new ModuleClass(this.sceneManager.scene, targetPos);
+    console.log("✅ Module created:", module);
     
     // Rotación para alineación cara a cara
     // El módulo ya tiene una rotación base de 30° (Math.PI / 6)
