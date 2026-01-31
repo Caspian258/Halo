@@ -1,23 +1,23 @@
 export class LaunchHUD {
   constructor() {
-    // Crear el contenedor si no existe
+    // Create container if it doesn't exist
     this.container = document.createElement('div');
     this.container.id = 'launch-hud';
     document.body.appendChild(this.container);
     
-    // Estilos iniciales (Oculto)
+    // Initial styles (Hidden)
     this.container.style.display = 'none';
   }
 
   show(module, destination) {
     this.module = module;
     this.destination = destination;
-    this.container.style.display = 'flex'; // Flex para horizontal
+    this.container.style.display = 'flex'; // Flex for horizontal
     this.startTime = Date.now();
     this.lastPosition = module.mesh.position.clone();
     this.lastUpdateTime = Date.now();
     
-    // Resetear animación visual
+    // Reset visual animation
     this.container.classList.remove('fade-in');
     void this.container.offsetWidth; // Trigger reflow
     this.container.classList.add('fade-in');
@@ -28,26 +28,26 @@ export class LaunchHUD {
 
     const currentPos = this.module.mesh.position;
     const currentTime = Date.now();
-    const deltaTime = (currentTime - this.lastUpdateTime) / 1000; // segundos
+    const deltaTime = (currentTime - this.lastUpdateTime) / 1000; // seconds
     
-    // Distancia al destino desde el HUB
+    // Distance to destination from HUB
     const distance = BABYLON.Vector3.Distance(currentPos, this.destination);
     
-    // Calcular velocidad real (cambio de posición / tiempo)
+    // Calculate real velocity (position change / time)
     let velocity = 0;
     if (deltaTime > 0 && this.lastPosition) {
       const displacement = BABYLON.Vector3.Distance(currentPos, this.lastPosition);
       velocity = displacement / deltaTime; // m/s
     }
     
-    // ETA estimado (tiempo para llegar)
+    // Estimated ETA (time to arrive)
     let eta = velocity > 0.1 ? (distance / velocity) : 0;
     
-    // Actualizar valores para el siguiente frame
+    // Update values for next frame
     this.lastPosition = currentPos.clone();
     this.lastUpdateTime = currentTime;
 
-    // HTML Estructurado Horizontalmente
+    // HTML Structured Horizontally
     this.container.innerHTML = `
       <div class="hud-item">
         <span class="hud-label">DISTANCIA AL HUB</span>

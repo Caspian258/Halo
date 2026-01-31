@@ -3,11 +3,11 @@ const MODULE_SPACING = 2.6;
 export class SimulationManager {
   constructor(sceneManager) {
     this.sceneManager = sceneManager;
-    this.modules = []; // Lista de todos los módulos lanzados
+    this.modules = []; // List of all launched modules
     this.activeHub = null;
-    this.isLaunching = false; // Control de lanzamiento en progreso
+    this.isLaunching = false; // Launch in progress control
 
-    // Intentar iniciar solo si el hub existe
+    // Try to initialize only if hub exists
     if (this.sceneManager.hubBody) {
       this.initCentralHub();
     } else {
@@ -18,36 +18,36 @@ export class SimulationManager {
   initCentralHub() {
     this.activeHub = this.sceneManager.hubBody;
     
-    // Configurar Metadata para el Hub Central
+    // Configure Metadata for Central Hub
     if (!this.activeHub.metadata) this.activeHub.metadata = {};
     this.activeHub.metadata.isHub = true;
-    this.activeHub.metadata.gridQ = 0; // Coordenada Axial Base
+    this.activeHub.metadata.gridQ = 0; // Base Axial Coordinate
     this.activeHub.metadata.gridR = 0;
     this.activeHub.metadata.parentModule = {
-      name: "Estación Central",
+      name: "Central Station",
       type: "HUB_NODE"
     };
     
-    // Añadir a la lista de colisiones
+    // Add to collision list
     this.modules.push({ mesh: this.activeHub });
     console.log("System Online: Central Hub Registered.");
   }
 
-  // Busca un espacio físico libre alrededor del Hub seleccionado
+  // Finds a free physical space around the selected Hub
   findFreeSlot(hubMesh) {
     if (!hubMesh) return null;
 
-    // 6 Ángulos para caras planas (Rotación 30°)
+    // 6 Angles for flat faces (30° Rotation)
     const angles = [30, 90, 150, 210, 270, 330];
 
     for (let angle of angles) {
       const rad = angle * (Math.PI / 180);
-      // Posición candidata
+      // Candidate position
       const offsetX = Math.cos(rad) * MODULE_SPACING;
       const offsetZ = Math.sin(rad) * MODULE_SPACING;
       const candidatePos = hubMesh.position.add(new BABYLON.Vector3(offsetX, 0, offsetZ));
 
-      // Chequeo de colisión (distancia < 1.0)
+      // Collision check (distance < 1.0)
       const isOccupied = this.modules.some(mod => {
         if (!mod.mesh) return false;
         return BABYLON.Vector3.Distance(mod.mesh.position, candidatePos) < 1.0;
@@ -63,10 +63,10 @@ export class SimulationManager {
   launchModule(ModuleClass, config = {}) {
     console.log("🚀 LaunchModule called with:", ModuleClass?.name, config);
     
-    // Verificar si hay un lanzamiento en progreso
+    // Check if launch is in progress
     if (this.isLaunching) {
       if (this.sceneManager.uiManager) {
-        this.sceneManager.uiManager.showWarningToast("Espera a que el módulo anterior aterrice");
+        this.sceneManager.uiManager.showWarningToast("Wait for the previous module to land");
       }
       return;
     }
@@ -80,17 +80,17 @@ export class SimulationManager {
 
     if (!slotInfo) {
       if (this.sceneManager.uiManager) {
-        this.sceneManager.uiManager.showWarningToast("HUB COMPLETO. Active otro nodo.");
+        this.sceneManager.uiManager.showWarningToast("HUB FULL. Activate another node.");
       }
       return;
     }
 
     const targetPos = slotInfo.position;
     
-    // Marcar que hay un lanzamiento en progreso
+    // Mark that a launch is in progress
     this.isLaunching = true;
 
-    // Instanciar
+    // Instantiate
     const module = new ModuleClass(this.sceneManager.scene, targetPos);
     
     // Rotación para alineación cara a cara
@@ -125,7 +125,7 @@ export class SimulationManager {
     
     if (module.setDestination) {
       module.setDestination(targetPos, () => {
-        // Callback cuando termina de aterrizar
+        // Callback when landing is complete
         this.isLaunching = false;
       });
     }
@@ -135,7 +135,7 @@ export class SimulationManager {
       this.launchHUD.show(module, targetPos);
     }
 
-    // Crear agente virtual en el visualizador 2D
+    // Create virtual agent in 2D visualizer
     if (this.sceneManager.graphVisualizer) {
       this.sceneManager.graphVisualizer.createVirtualAgent(module.mesh);
     }
@@ -151,12 +151,12 @@ export class SimulationManager {
   setActiveHub(moduleOrMesh) {
     let targetMesh = null;
 
-    // Determinar si recibimos un módulo o un mesh directo
+    // Determine if we received a module or a direct mesh
     if (moduleOrMesh && moduleOrMesh.mesh) {
-      // Es un objeto módulo
+      // It's a module object
       targetMesh = moduleOrMesh.mesh;
     } else if (moduleOrMesh && moduleOrMesh.position) {
-      // Es un mesh directo
+      // It's a direct mesh
       targetMesh = moduleOrMesh;
     }
 
@@ -164,31 +164,31 @@ export class SimulationManager {
     
     this.activeHub = targetMesh;
     
-    // Mover cámara al nuevo centro
+    // Move camera to new center
     this.sceneManager.camera.setTarget(targetMesh.position);
     
-    // Feedback usuario
+    // User feedback
     if (this.sceneManager.uiManager) {
-      const name = targetMesh.metadata?.parentModule?.name || moduleOrMesh.name || "Nodo de Expansión";
-      this.sceneManager.uiManager.showWarningToast(`HUB ACTIVO: ${name}`);
+      const name = targetMesh.metadata?.parentModule?.name || moduleOrMesh.name || "Expansion Node";
+      this.sceneManager.uiManager.showWarningToast(`ACTIVE HUB: ${name}`);
       this.sceneManager.uiManager.log(`Active hub changed to: ${name}`, "INFO");
     }
   }
 
-  // Método para compatibilidad con código antiguo
+  // Method for compatibility with old code
   undockModule(module) {
     if (!module || !module.mesh) {
-      console.warn("undockModule: módulo inválido.");
+      console.warn("undockModule: invalid module.");
       return;
     }
 
-    // Eliminar de la lista de módulos
+    // Remove from module list
     const index = this.modules.indexOf(module);
     if (index > -1) {
       this.modules.splice(index, 1);
     }
 
-    // Animación de despedida
+    // Farewell animation
     const scene = this.sceneManager.scene;
     if (!scene) return;
 
@@ -226,7 +226,7 @@ export class SimulationManager {
   }
 
   update(deltaTime) {
-    // Actualizar cada módulo si tiene update
+    // Update each module if it has update
     this.modules.forEach(moduleWrapper => {
       const module = moduleWrapper.mesh?.metadata?.parentModule || moduleWrapper;
       if (module && typeof module.update === 'function') {
@@ -236,7 +236,7 @@ export class SimulationManager {
   }
 
   triggerRandomFault() {
-    // Filtrar solo módulos operativos (no hubs, no en falla)
+    // Filter only operational modules (not hubs, not in fault)
     const operationalModules = this.modules.filter(m => {
       const mod = m.mesh?.metadata?.parentModule || m;
       return mod && mod.status === "NOMINAL" && mod.type !== "HUB_NODE" && !mod.mesh?.metadata?.isHub;
@@ -244,12 +244,12 @@ export class SimulationManager {
 
     if (operationalModules.length === 0) {
       if (this.sceneManager.uiManager) {
-        this.sceneManager.uiManager.showWarningToast("No hay módulos operativos para simular falla");
+        this.sceneManager.uiManager.showWarningToast("No operational modules to simulate fault");
       }
       return;
     }
 
-    // Seleccionar uno aleatorio
+    // Select a random one
     const randomIndex = Math.floor(Math.random() * operationalModules.length);
     const moduleWrapper = operationalModules[randomIndex];
     const module = moduleWrapper.mesh?.metadata?.parentModule || moduleWrapper;
@@ -262,7 +262,7 @@ export class SimulationManager {
         this.sceneManager.uiManager.showWarningToast(`ALERT: ${module.name} malfunction detected!`);
       }
 
-      // Efectos visuales
+      // Visual effects
       if (this.fxManager && this.fxManager.spawnAlertParticles) {
         this.fxManager.spawnAlertParticles(module.mesh.position);
       }
