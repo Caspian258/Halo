@@ -20,17 +20,16 @@ uiManager.launchHUD = launchHUD;
 
 window.uiManager = uiManager;
 
-uiManager.log("System Initialized. Hub Connectivity: 100%", "SUCCESS");
-uiManager.log("Awaiting module deployment commands...", "INFO");
+// Mensajes iniciales del sistema
+uiManager.log("Sistema Inicializado. Conectividad del Hub: 100%", "SUCCESS");
+uiManager.log("Esperando comandos de despliegue...", "INFO");
 
 const launch = (ModuleClass, name, colorHex, type = "MODULE") => {
-  console.log(`🎯 Launch button clicked: ${name}`);
-  uiManager.log(`Sequence initiated: Launching ${name}`, "INFO");
+  uiManager.log(`Lanzando ${name}`, "INFO");
   sceneManager.simulationManager.launchModule(ModuleClass, { name, color: colorHex, type });
 };
 
 document.getElementById("btn-graphene")?.addEventListener("click", () => {
-  console.log("Button graphene clicked");
   launch(GrapheneModule, "Grafeno", "#2563eb");
 });
 
@@ -61,17 +60,5 @@ document.getElementById("btn-hub-expansion")?.addEventListener("click", () => {
 document.getElementById("btn-sim-fault")?.addEventListener("click", () => {
   if (sceneManager.simulationManager.triggerRandomFault) {
     sceneManager.simulationManager.triggerRandomFault();
-    // Mostrar botón de reparar
-    const fixBtn = document.getElementById("btn-fix-all");
-    if (fixBtn) fixBtn.style.display = "block";
-  }
-});
-
-document.getElementById("btn-fix-all")?.addEventListener("click", () => {
-  if (sceneManager.simulationManager.fixAllFaults) {
-    sceneManager.simulationManager.fixAllFaults();
-    // Ocultar botón de reparar después de usarlo
-    const fixBtn = document.getElementById("btn-fix-all");
-    if (fixBtn) fixBtn.style.display = "none";
   }
 });

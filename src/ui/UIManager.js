@@ -266,49 +266,49 @@ export class UIManager {
       
       inspectorData.innerHTML = `
         <div class="info-grid">
-          <div class="section-title">SYSTEM IDENTITY</div>
+          <div class="section-title">IDENTIDAD DEL SISTEMA</div>
           <div class="data-row">
-            <span class="label">Module Type</span>
-            <span class="value" style="color: ${moduleColor}">${module.name || 'Unknown'}</span>
+            <span class="label">Tipo de Módulo</span>
+            <span class="value" style="color: ${moduleColor}">${module.name || 'Desconocido'}</span>
           </div>
           <div class="data-row">
-            <span class="label">ID Tag</span>
+            <span class="label">Etiqueta ID</span>
             <span class="value mono">${moduleId.substring(0, 18)}...</span>
           </div>
           <div class="data-row">
-            <span class="label">Status</span>
+            <span class="label">Estado</span>
             <span class="value" style="color: ${statusColor}; text-shadow: 0 0 5px ${statusGlow};">
-              ● ${moduleStatus}
+              ● ${moduleStatus === 'OPERATIONAL' ? 'OPERACIONAL' : moduleStatus === 'CRITICAL' ? 'CRÍTICO' : moduleStatus}
             </span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-boxes-stacked"></i> Resources</span>
+            <span class="label"><i class="fa-solid fa-boxes-stacked"></i> Recursos</span>
             <span class="value" id="module-resources">${module.resourcesGenerated || 0}</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-industry"></i> Production</span>
-            <span class="value">${module.stats?.production || 0}/sec</span>
+            <span class="label"><i class="fa-solid fa-industry"></i> Producción</span>
+            <span class="value">${module.stats?.production || 0}/seg</span>
           </div>
 
-          <div class="section-title">PERFORMANCE METRICS</div>
+          <div class="section-title">MÉTRICAS DE RENDIMIENTO</div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-temperature-half"></i> Temp</span>
+            <span class="label"><i class="fa-solid fa-temperature-half"></i> Temperatura</span>
             <span class="value"><span id="val-temp">${temp.toFixed(1)}</span> °C</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-microchip"></i> CPU Load</span>
+            <span class="label"><i class="fa-solid fa-microchip"></i> Carga CPU</span>
             <span class="value"><span id="val-cpu">${cpu.toFixed(1)}</span> %</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-gauge-high"></i> Efficiency</span>
+            <span class="label"><i class="fa-solid fa-gauge-high"></i> Eficiencia</span>
             <span class="value"><span id="val-eff">${efficiency.toFixed(1)}</span> %</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-bolt"></i> Power Draw</span>
+            <span class="label"><i class="fa-solid fa-bolt"></i> Consumo Energético</span>
             <span class="value"><span id="val-power">${power.toFixed(1)}</span> kW</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-shield-halved"></i> Integrity</span>
+            <span class="label"><i class="fa-solid fa-shield-halved"></i> Integridad</span>
             <span class="value">100%</span>
           </div>
         </div>
@@ -325,8 +325,8 @@ export class UIManager {
         const activateBtn = document.createElement("button");
         activateBtn.id = "btn-activate";
         activateBtn.className = "btn-undock";
-        activateBtn.style.background = "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)";
-        activateBtn.innerHTML = '<i class="fa-solid fa-circle-dot"></i> MAKE ACTIVE HUB';
+        activateBtn.style.cssText = 'width: 100%; margin-bottom: 8px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff;';
+        activateBtn.innerHTML = `<i class="fa-solid fa-circle-dot"></i> ACTIVAR COMO HUB`;
         activateBtn.onclick = () => {
           if (this.sceneManager?.simulationManager?.setActiveHub) {
             // Pasar el objeto módulo completo
@@ -340,7 +340,7 @@ export class UIManager {
       if (!isHub && module.mesh) {
         const removeBtn = document.createElement("button");
         removeBtn.className = "btn-undock";
-        removeBtn.innerHTML = '<i class="fa-solid fa-eject"></i> REMOVE MODULE';
+        removeBtn.innerHTML = `<i class="fa-solid fa-eject"></i> REMOVER MÓDULO`;
         removeBtn.style.cssText = 'width: 100%; margin-bottom: 8px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff;';
         removeBtn.onclick = () => {
           if (this.sceneManager?.simulationManager?.undockModule) {
@@ -355,55 +355,12 @@ export class UIManager {
       if (onUndockCallback && status === "docked") {
         const undockBtn = document.createElement("button");
         undockBtn.className = "btn-undock";
-        undockBtn.innerHTML = '<i class="fa-solid fa-eject"></i> UNDOCK MODULE';
+        undockBtn.innerHTML = `<i class="fa-solid fa-rocket"></i> DESACOPLAR MÓDULO`;
         undockBtn.style.cssText = 'width: 100%; margin-bottom: 8px;';
         undockBtn.onclick = () => {
           onUndockCallback();
         };
         actionsDiv.appendChild(undockBtn);
-      }
-
-      // Agregar botón de reparación si el módulo está en estado CRITICAL
-      if (module.status === "CRITICAL") {
-        const repairBtn = document.createElement("button");
-        repairBtn.id = "btn-repair";
-        repairBtn.className = "btn-repair";
-        repairBtn.innerHTML = '<i class="fa-solid fa-wrench"></i> REBOOT SYSTEM';
-        repairBtn.style.cssText = `
-          width: 100%;
-          padding: 10px;
-          background: transparent;
-          border: 1px solid #f59e0b;
-          border-radius: 4px;
-          color: #f59e0b;
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 1px;
-          text-transform: uppercase;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        `;
-
-        repairBtn.onmouseover = () => {
-          repairBtn.style.background = "#f59e0b";
-          repairBtn.style.color = "#fff";
-        };
-
-        repairBtn.onmouseout = () => {
-          repairBtn.style.background = "transparent";
-          repairBtn.style.color = "#f59e0b";
-        };
-
-        repairBtn.onclick = () => {
-          const success = module.repair();
-          if (success) {
-            this.log(`System rebooted. Diagnostics: OK. Module ${module.name || ""}`, "SUCCESS");
-            this.showModuleInfo(module, onUndockCallback); // Refrescar panel
-          }
-        };
-
-        actionsDiv.appendChild(repairBtn);
       }
       
       // Agregar contenedor de acciones al inspector solo si tiene botones
