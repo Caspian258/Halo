@@ -338,6 +338,24 @@ export class UIManager {
 
       // Agregar botón de remover módulo (solo para módulos, no para hubs)
       if (!isHub && module.mesh) {
+        // Botón de reparar (solo si está en CRITICAL)
+        if (module.status === "CRITICAL") {
+          const repairBtn = document.createElement("button");
+          repairBtn.className = "btn-undock";
+          repairBtn.innerHTML = `<i class="fa-solid fa-wrench"></i> REPARAR MÓDULO`;
+          repairBtn.style.cssText = 'width: 100%; margin-bottom: 8px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff;';
+          repairBtn.onclick = () => {
+            if (module.repair) {
+              module.repair();
+              this.log(`✅ Módulo reparado: ${module.name}`, "SUCCESS");
+              this.showWarningToast("Módulo reparado exitosamente");
+              // Actualizar el inspector
+              this.showModuleInfo(module);
+            }
+          };
+          actionsDiv.appendChild(repairBtn);
+        }
+        
         const removeBtn = document.createElement("button");
         removeBtn.className = "btn-undock";
         removeBtn.innerHTML = `<i class="fa-solid fa-eject"></i> REMOVER MÓDULO`;
