@@ -53,10 +53,127 @@
         <i class="fa-solid fa-network-wired" style="color: #e2e8f0;"></i>
         <span style="font-weight: 600;">Módulo de Expansión (HUB)</span>
       </button>
+      <button id="btn-custom-module" class="module-card" style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border: 2px solid #a78bfa;">
+        <i class="fa-solid fa-plus-circle" style="color: #ffffff;"></i>
+        <span style="font-weight: 600; color: #ffffff;">Crear Módulo Personalizado</span>
+      </button>
       <button id="btn-sim-fault" class="danger-btn">
         <i class="fa-solid fa-triangle-exclamation"></i> SIMULAR FALLA
       </button>
     </aside>
+
+    <!-- Modal para crear módulo personalizado -->
+    <div id="custom-module-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
+      <div style="background: #0f172a; padding: 24px; border-radius: 8px; border: 2px solid #334155; width: 400px; font-family: 'Roboto', sans-serif;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="color: #e2e8f0; margin: 0; font-size: 18px;">
+            <i class="fa-solid fa-plus-circle" style="color: #a78bfa;"></i> Crear Módulo Personalizado
+          </h2>
+          <button id="btn-close-custom-modal" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 20px;">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; color: #94a3b8; font-size: 12px; margin-bottom: 6px;">Nombre del Módulo</label>
+          <input type="text" id="custom-module-name" placeholder="Ej: Módulo Solar" style="width: 100%; padding: 10px; background: #1e293b; border: 1px solid #334155; border-radius: 4px; color: #e2e8f0; font-size: 14px;" />
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; color: #94a3b8; font-size: 12px; margin-bottom: 6px;">Color del Módulo</label>
+          <input type="color" id="custom-module-color" value="#ff6b6b" style="width: 100%; height: 40px; padding: 4px; background: #1e293b; border: 1px solid #334155; border-radius: 4px; cursor: pointer;" />
+        </div>
+        
+        <button id="btn-create-custom-module" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; font-size: 14px;">
+          <i class="fa-solid fa-check"></i> Crear Módulo
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal de visualizador 2D -->
+    <div id="graph-modal" style="display: none;">
+      <div id="graph-modal-content">
+        <div class="graph-header">
+          <i class="fa-solid fa-diagram-project"></i> TOPOLOGÍA DE RED
+          <button id="btn-close-graph" style="margin-left: auto; background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 18px;">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <div style="display: flex;">
+          <div style="flex: 1;">
+            <canvas id="graph-canvas" width="800" height="800"></canvas>
+          </div>
+          <div style="width: 200px; padding: 16px; background: rgba(15, 23, 42, 0.95); border-left: 1px solid #334155; overflow-y: auto;">
+            <h3 style="font-size: 11px; color: #64748b; margin: 0 0 12px 0; font-family: 'JetBrains Mono', monospace;">LANZAR MÓDULOS</h3>
+            <button class="graph-launch-btn" data-module="graphene">
+              <i class="fa-solid fa-cube"></i>
+              <span>Grafeno</span>
+            </button>
+            <button class="graph-launch-btn" data-module="zblan">
+              <i class="fa-solid fa-lightbulb"></i>
+              <span>ZBLAN</span>
+            </button>
+            <button class="graph-launch-btn" data-module="alloys">
+              <i class="fa-solid fa-gears"></i>
+              <span>Aleación</span>
+            </button>
+            <button class="graph-launch-btn" data-module="ceramics">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>Cerámica</span>
+            </button>
+            <button class="graph-launch-btn" data-module="bio">
+              <i class="fa-solid fa-dna"></i>
+              <span>Bio</span>
+            </button>
+            <button class="graph-launch-btn" data-module="crystals">
+              <i class="fa-solid fa-gem"></i>
+              <span>Cristal</span>
+            </button>
+            <button class="graph-launch-btn" data-module="hub" style="margin-top: 12px; border-color: #ffd54f; color: #ffd54f;">
+              <i class="fa-solid fa-network-wired"></i>
+              <span>HUB</span>
+            </button>
+            
+            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #334155;">
+              <h3 style="font-size: 11px; color: #64748b; margin: 0 0 12px 0; font-family: 'JetBrains Mono', monospace;">PROGRESO</h3>
+              <div id="progress-container" style="font-family: 'JetBrains Mono', monospace;">
+                <p style="color: #64748b; font-size: 10px; text-align: center; padding: 8px;">Sin módulos en ruta</p>
+              </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #334155;">
+              <h3 style="font-size: 10px; color: #64748b; margin: 0 0 10px 0; font-family: 'JetBrains Mono', monospace;">LEYENDA</h3>
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 10px; font-family: 'JetBrains Mono', monospace;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <div style="width: 12px; height: 12px; border: 2px solid #ffd54f; border-radius: 2px;"></div>
+                  <span style="color: #94a3b8;">Hub</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <div style="width: 12px; height: 12px; border: 2px solid #42a5f5; border-radius: 2px;"></div>
+                  <span style="color: #94a3b8;">Acoplado</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <div style="width: 12px; height: 12px; border: 2px solid #64748b; border-radius: 2px;"></div>
+                  <span style="color: #94a3b8;">En ruta</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <div style="width: 20px; height: 2px; background: repeating-linear-gradient(90deg, #475569 0px, #475569 5px, transparent 5px, transparent 10px);"></div>
+                  <span style="color: #94a3b8;">Aproximando</span>
+                </div>
+              </div>
+              
+              <div style="margin-top: 12px; padding: 8px; background: rgba(255, 213, 79, 0.1); border-left: 3px solid #ffd54f; border-radius: 2px;">
+                <p style="color: #ffd54f; font-size: 9px; margin: 0; line-height: 1.4;">
+                  <i class="fa-solid fa-satellite" style="margin-right: 4px;"></i>
+                  <strong>ÓRBITA TERRESTRE BAJA</strong><br>
+                  <span style="color: #94a3b8;">~400 km de altitud</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Panel Derecho: Inspector de Datos -->
     <aside id="inspector-panel" style="display: none;">

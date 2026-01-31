@@ -120,6 +120,11 @@ export class SimulationManager {
       this.launchHUD.show(module, targetPos);
     }
 
+    // Crear agente virtual en el visualizador 2D
+    if (this.sceneManager.graphVisualizer) {
+      this.sceneManager.graphVisualizer.createVirtualAgent(module.mesh);
+    }
+
     // Log
     if (this.sceneManager.uiManager) {
       this.sceneManager.uiManager.log(`Launching ${module.name}...`, "INFO");
