@@ -50,23 +50,23 @@ export class LaunchHUD {
     // HTML Estructurado Horizontalmente
     this.container.innerHTML = `
       <div class="hud-item">
-        <span class="hud-label">HUB DISTANCE</span>
+        <span class="hud-label">DISTANCIA AL HUB</span>
         <span class="hud-value">${distance.toFixed(2)} <small>m</small></span>
       </div>
       <div class="hud-separator"></div>
       <div class="hud-item">
-        <span class="hud-label">VELOCITY</span>
+        <span class="hud-label">VELOCIDAD</span>
         <span class="hud-value">${velocity.toFixed(2)} <small>m/s</small></span>
       </div>
       <div class="hud-separator"></div>
       <div class="hud-item">
-        <span class="hud-label">CONNECTION TIME</span>
+        <span class="hud-label">TIEMPO DE CONEXIÓN</span>
         <span class="hud-value text-warning">${eta.toFixed(1)} <small>s</small></span>
       </div>
       <div class="hud-separator"></div>
       <div class="hud-item status-blink">
-        <span class="hud-label">STATUS</span>
-        <span class="hud-value text-success">DOCKING</span>
+        <span class="hud-label">ESTADO</span>
+        <span class="hud-value text-success">ACOPLANDO</span>
       </div>
     `;
 
