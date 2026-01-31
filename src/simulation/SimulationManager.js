@@ -5,6 +5,7 @@ export class SimulationManager {
     this.sceneManager = sceneManager;
     this.modules = []; // Lista de todos los módulos lanzados
     this.activeHub = null;
+    this.isLaunching = false; // Control de lanzamiento en progreso
 
     // Intentar iniciar solo si el hub existe
     if (this.sceneManager.hubBody) {
@@ -62,6 +63,14 @@ export class SimulationManager {
   launchModule(ModuleClass, config = {}) {
     console.log("🚀 LaunchModule called with:", ModuleClass?.name, config);
     
+    // Verificar si hay un lanzamiento en progreso
+    if (this.isLaunching) {
+      if (this.sceneManager.uiManager) {
+        this.sceneManager.uiManager.showWarningToast("Espera a que el módulo anterior aterrice");
+      }
+      return;
+    }
+    
     if (!this.activeHub) {
       console.error("No Active Hub selected");
       return;
@@ -77,6 +86,9 @@ export class SimulationManager {
     }
 
     const targetPos = slotInfo.position;
+    
+    // Marcar que hay un lanzamiento en progreso
+    this.isLaunching = true;
 
     // Instanciar
     const module = new ModuleClass(this.sceneManager.scene, targetPos);
@@ -112,7 +124,10 @@ export class SimulationManager {
     module.mesh.position = spawnPos;
     
     if (module.setDestination) {
-      module.setDestination(targetPos);
+      module.setDestination(targetPos, () => {
+        // Callback cuando termina de aterrizar
+        this.isLaunching = false;
+      });
     }
 
     // HUD

@@ -138,7 +138,7 @@ export class BaseModule {
     }, 1000);
   }
 
-  setDestination(targetPosition) {
+  setDestination(targetPosition, onLandingComplete) {
     if (!this.mesh) return;
     
     // Animación suave de descenso
@@ -161,6 +161,11 @@ export class BaseModule {
         // Aterrizaje completado
         this.mesh.position = targetPosition.clone();
         this.isDocked = true;
+        
+        // Llamar al callback si existe
+        if (onLandingComplete) {
+          onLandingComplete();
+        }
       }
     };
     
