@@ -28,41 +28,41 @@ uiManager.graphVisualizer = graphVisualizer;
 
 window.uiManager = uiManager;
 
-// Mensajes iniciales del sistema
-uiManager.log("Sistema Inicializado. Conectividad del Hub: 100%", "SUCCESS");
-uiManager.log("Esperando comandos de despliegue...", "INFO");
+// Initial system messages
+uiManager.log("System Initialized. Hub Connectivity: 100%", "SUCCESS");
+uiManager.log("Waiting for deployment commands...", "INFO");
 
 const launch = (ModuleClass, name, colorHex, type = "MODULE") => {
-  uiManager.log(`Lanzando ${name}`, "INFO");
+  uiManager.log(`Launching ${name}`, "INFO");
   sceneManager.simulationManager.launchModule(ModuleClass, { name, color: colorHex, type });
 };
 
 document.getElementById("btn-graphene")?.addEventListener("click", () => {
-  launch(GrapheneModule, "Grafeno", "#2563eb");
+  launch(GrapheneModule, "Graphene", "#2563eb");
 });
 
 document.getElementById("btn-zblan")?.addEventListener("click", () => {
-  launch(GrapheneModule, "Fibra ZBLAN", "#d946ef");
+  launch(GrapheneModule, "ZBLAN Fiber", "#d946ef");
 });
 
 document.getElementById("btn-alloys")?.addEventListener("click", () => {
-  launch(PolymerModule, "Aleación Ti-Al", "#f97316");
+  launch(PolymerModule, "Ti-Al Alloy", "#f97316");
 });
 
 document.getElementById("btn-ceramics")?.addEventListener("click", () => {
-  launch(PolymerModule, "Cerámica Térmica", "#a8a29e");
+  launch(PolymerModule, "Thermal Ceramic", "#a8a29e");
 });
 
 document.getElementById("btn-bio")?.addEventListener("click", () => {
-  launch(AerogelModule, "Tejido Bio-Impreso", "#10b981");
+  launch(AerogelModule, "Bio-Printed Tissue", "#10b981");
 });
 
 document.getElementById("btn-crystals")?.addEventListener("click", () => {
-  launch(AerogelModule, "Cristal Proteico", "#06b6d4");
+  launch(AerogelModule, "Protein Crystal", "#06b6d4");
 });
 
 document.getElementById("btn-hub-expansion")?.addEventListener("click", () => {
-  launch(HubExpansionModule, "Nodo de Expansión", "#e2e8f0", "HUB_NODE");
+  launch(HubExpansionModule, "Expansion Node", "#e2e8f0", "HUB_NODE");
 });
 
 document.getElementById("btn-sim-fault")?.addEventListener("click", () => {
@@ -92,34 +92,34 @@ document.querySelectorAll(".graph-launch-btn").forEach(btn => {
     
     switch(moduleType) {
       case "graphene":
-        launch(GrapheneModule, "Grafeno", "#2563eb");
+        launch(GrapheneModule, "Graphene", "#2563eb");
         break;
       case "zblan":
-        launch(GrapheneModule, "Fibra ZBLAN", "#d946ef");
+        launch(GrapheneModule, "ZBLAN Fiber", "#d946ef");
         break;
       case "alloys":
-        launch(PolymerModule, "Aleación Ti-Al", "#f97316");
+        launch(PolymerModule, "Ti-Al Alloy", "#f97316");
         break;
       case "ceramics":
-        launch(PolymerModule, "Cerámica Térmica", "#a8a29e");
+        launch(PolymerModule, "Thermal Ceramic", "#a8a29e");
         break;
       case "bio":
-        launch(AerogelModule, "Tejido Bio-Impreso", "#10b981");
+        launch(AerogelModule, "Bio-Printed Tissue", "#10b981");
         break;
       case "crystals":
-        launch(AerogelModule, "Cristal Proteico", "#06b6d4");
+        launch(AerogelModule, "Protein Crystal", "#06b6d4");
         break;
       case "hub":
-        launch(HubExpansionModule, "Nodo de Expansión", "#e2e8f0", "HUB_NODE");
+        launch(HubExpansionModule, "Expansion Node", "#e2e8f0", "HUB_NODE");
         break;
     }
   });
 });
 
-// Almacenar módulos  y mas
+// Store custom modules
 const customModules = [];
 
-// Modal para crear módulo personalizado
+// Modal to create custom module
 document.getElementById("btn-custom-module")?.addEventListener("click", () => {
   const modal = document.getElementById("custom-module-modal");
   if (modal) {
@@ -142,21 +142,21 @@ document.getElementById("btn-create-custom-module")?.addEventListener("click", (
   const moduleColor = colorInput.value;
   
   if (!moduleName) {
-    alert("Por favor ingresa un nombre para el módulo");
+    alert("Please enter a name for the module");
     return;
   }
   
-  // Crear ID único para el módulo
+  // Create unique ID for the module
   const moduleId = `custom-${Date.now()}`;
   
-  // Guardar módulo personalizado
+  // Save custom module
   customModules.push({
     id: moduleId,
     name: moduleName,
     color: moduleColor
   });
   
-  // Crear botón en el sidebar
+  // Create button in the sidebar
   const sidebar = document.getElementById("sidebar");
   const newButton = document.createElement("button");
   newButton.id = `btn-${moduleId}`;
@@ -170,36 +170,36 @@ document.getElementById("btn-create-custom-module")?.addEventListener("click", (
     </button>
   `;
   
-  // Insertar antes del botón de simular falla
+  // Insert before the simulate fault button
   const faultBtn = document.getElementById("btn-sim-fault");
   sidebar.insertBefore(newButton, faultBtn);
   
-  // Agregar evento al botón de eliminar
+  // Add event to the delete button
   const deleteBtn = newButton.querySelector(".delete-module-btn");
   deleteBtn.addEventListener("click", (e) => {
-    e.stopPropagation(); // Evitar que se lance el módulo al hacer clic en eliminar
+    e.stopPropagation(); // Prevent launching the module when clicking delete
     
-    // Eliminar del array
+    // Remove from array
     const index = customModules.findIndex(m => m.id === moduleId);
     if (index > -1) {
       customModules.splice(index, 1);
     }
     
-    // Eliminar el botón del DOM
+    // Remove the button from the DOM
     newButton.remove();
     
-    uiManager.log(`Módulo personalizado eliminado: ${moduleName}`, "INFO");
+    uiManager.log(`Custom module deleted: ${moduleName}`, "INFO");
   });
   
-  // Agregar evento al nuevo botón (para lanzar el módulo)
+  // Add event to the new button (to launch the module)
   newButton.addEventListener("click", () => {
     launch(GrapheneModule, moduleName, moduleColor);
   });
   
-  // Cerrar modal y limpiar
+  // Close modal and clean
   document.getElementById("custom-module-modal").style.display = "none";
   nameInput.value = "";
   colorInput.value = "#ff6b6b";
   
-  uiManager.log(`Módulo personalizado creado: ${moduleName}`, "SUCCESS");
-});personalizados
+  uiManager.log(`Custom module created: ${moduleName}`, "SUCCESS");
+});

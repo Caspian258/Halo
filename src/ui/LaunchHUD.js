@@ -1,23 +1,23 @@
 export class LaunchHUD {
   constructor() {
-    // Crear el contenedor si no existe
+    // Create the container if it doesn't exist
     this.container = document.createElement('div');
     this.container.id = 'launch-hud';
     document.body.appendChild(this.container);
     
-    // Estilos iniciales (Oculto)
+    // Initial styles (Hidden)
     this.container.style.display = 'none';
   }
 
   show(module, destination) {
     this.module = module;
     this.destination = destination;
-    this.container.style.display = 'flex'; // Flex para horizontal
+    this.container.style.display = 'flex'; // Flex for horizontal
     this.startTime = Date.now();
     this.lastPosition = module.mesh.position.clone();
     this.lastUpdateTime = Date.now();
     
-    // Resetear animación visual
+    // Reset visual animation
     this.container.classList.remove('fade-in');
     void this.container.offsetWidth; // Trigger reflow
     this.container.classList.add('fade-in');
@@ -28,49 +28,49 @@ export class LaunchHUD {
 
     const currentPos = this.module.mesh.position;
     const currentTime = Date.now();
-    const deltaTime = (currentTime - this.lastUpdateTime) / 1000; // segundos
+    const deltaTime = (currentTime - this.lastUpdateTime) / 1000; // seconds
     
-    // Distancia al destino desde el HUB
+    // Distance to destination from the HUB
     const distance = BABYLON.Vector3.Distance(currentPos, this.destination);
     
-    // Calcular velocidad real (cambio de posición / tiempo)
+    // Calculate real velocity (position change / time)
     let velocity = 0;
     if (deltaTime > 0 && this.lastPosition) {
       const displacement = BABYLON.Vector3.Distance(currentPos, this.lastPosition);
       velocity = displacement / deltaTime; // m/s
     }
     
-    // ETA estimado (tiempo para llegar)
+    // Estimated ETA (time to arrive)
     let eta = velocity > 0.1 ? (distance / velocity) : 0;
     
-    // Actualizar valores para el siguiente frame
+    // Update values for the next frame
     this.lastPosition = currentPos.clone();
     this.lastUpdateTime = currentTime;
 
-    // HTML Estructurado Horizontalmente
+    // Structured HTML Horizontally
     this.container.innerHTML = `
       <div class="hud-item">
-        <span class="hud-label">DISTANCIA AL HUB</span>
+        <span class="hud-label">DISTANCE TO HUB</span>
         <span class="hud-value">${distance.toFixed(2)} <small>m</small></span>
       </div>
       <div class="hud-separator"></div>
       <div class="hud-item">
-        <span class="hud-label">VELOCIDAD</span>
+        <span class="hud-label">VELOCITY</span>
         <span class="hud-value">${velocity.toFixed(2)} <small>m/s</small></span>
       </div>
       <div class="hud-separator"></div>
       <div class="hud-item">
-        <span class="hud-label">TIEMPO DE CONEXIÓN</span>
+        <span class="hud-label">CONNECTION TIME</span>
         <span class="hud-value text-warning">${eta.toFixed(1)} <small>s</small></span>
       </div>
       <div class="hud-separator"></div>
       <div class="hud-item status-blink">
-        <span class="hud-label">ESTADO</span>
-        <span class="hud-value text-success">ACOPLANDO</span>
+        <span class="hud-label">STATUS</span>
+        <span class="hud-value text-success">DOCKING</span>
       </div>
     `;
 
-    // Auto-ocultar si llegó (Distancia < 0.2)
+    // Auto-hide if arrived (Distance < 0.2)
     if (distance < 0.2) {
       this.hide();
     }
