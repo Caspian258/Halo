@@ -61,6 +61,17 @@ document.getElementById("btn-hub-expansion")?.addEventListener("click", () => {
 document.getElementById("btn-sim-fault")?.addEventListener("click", () => {
   if (sceneManager.simulationManager.triggerRandomFault) {
     sceneManager.simulationManager.triggerRandomFault();
+    // Mostrar botón de reparar
+    const fixBtn = document.getElementById("btn-fix-all");
+    if (fixBtn) fixBtn.style.display = "block";
   }
 });
 
+document.getElementById("btn-fix-all")?.addEventListener("click", () => {
+  if (sceneManager.simulationManager.fixAllFaults) {
+    sceneManager.simulationManager.fixAllFaults();
+    // Ocultar botón de reparar después de usarlo
+    const fixBtn = document.getElementById("btn-fix-all");
+    if (fixBtn) fixBtn.style.display = "none";
+  }
+});

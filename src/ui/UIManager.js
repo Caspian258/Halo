@@ -319,8 +319,8 @@ export class UIManager {
       actionsDiv.style.cssText = 'margin-top: 20px; padding: 16px; padding-top: 10px; border-top: 1px solid #334155;';
 
       // Botón especial para Hub Expansion (MAKE ACTIVE HUB)
-      // Mostrar si es HUB_NODE O si tiene la metadata isHub
-      const isHub = module.type === "HUB_NODE" || module.mesh?.metadata?.isHub;
+      // SOLO mostrar si es realmente un HUB (HUB_NODE o Central Hub)
+      const isHub = module.type === "HUB_NODE" || module.mesh?.metadata?.isHub === true;
       if (isHub) {
         const activateBtn = document.createElement("button");
         activateBtn.id = "btn-activate";
@@ -336,7 +336,22 @@ export class UIManager {
         actionsDiv.appendChild(activateBtn);
       }
 
-      // Agregar botón de desacople si hay callback
+      // Agregar botón de remover módulo (solo para módulos, no para hubs)
+      if (!isHub && module.mesh) {
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "btn-undock";
+        removeBtn.innerHTML = '<i class="fa-solid fa-eject"></i> REMOVE MODULE';
+        removeBtn.style.cssText = 'width: 100%; margin-bottom: 8px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);';
+        removeBtn.onclick = () => {
+          if (this.sceneManager?.simulationManager?.undockModule) {
+            this.sceneManager.simulationManager.undockModule(module);
+            this.hide(); // Cerrar panel
+          }
+        };
+        actionsDiv.appendChild(removeBtn);
+      }
+
+      // Agregar botón de desacople si hay callback (compatibilidad con código antiguo)
       if (onUndockCallback && status === "docked") {
         const undockBtn = document.createElement("button");
         undockBtn.className = "btn-undock";

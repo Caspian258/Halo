@@ -14,6 +14,8 @@ export class LaunchHUD {
     this.destination = destination;
     this.container.style.display = 'flex'; // Flex para horizontal
     this.startTime = Date.now();
+    this.lastPosition = module.mesh.position.clone();
+    this.lastUpdateTime = Date.now();
     
     // Resetear animación visual
     this.container.classList.remove('fade-in');
@@ -25,34 +27,46 @@ export class LaunchHUD {
     if (!this.module || this.container.style.display === 'none') return;
 
     const currentPos = this.module.mesh.position;
+    const currentTime = Date.now();
+    const deltaTime = (currentTime - this.lastUpdateTime) / 1000; // segundos
+    
+    // Distancia al destino desde el HUB
     const distance = BABYLON.Vector3.Distance(currentPos, this.destination);
     
-    // Velocidad simulada (basada en cambio de distancia o fake)
-    const velocity = (distance * 1.5).toFixed(0); 
+    // Calcular velocidad real (cambio de posición / tiempo)
+    let velocity = 0;
+    if (deltaTime > 0 && this.lastPosition) {
+      const displacement = BABYLON.Vector3.Distance(currentPos, this.lastPosition);
+      velocity = displacement / deltaTime; // m/s
+    }
     
-    // ETA simulado
-    const eta = (distance / 5).toFixed(1);
+    // ETA estimado (tiempo para llegar)
+    let eta = velocity > 0.1 ? (distance / velocity) : 0;
+    
+    // Actualizar valores para el siguiente frame
+    this.lastPosition = currentPos.clone();
+    this.lastUpdateTime = currentTime;
 
     // HTML Estructurado Horizontalmente
     this.container.innerHTML = `
       <div class="hud-item">
-        <span class="hud-label">TARGET DISTANCE</span>
-        <span class="hud-value">${distance.toFixed(1)} <small>m</small></span>
+        <span class="hud-label">HUB DISTANCE</span>
+        <span class="hud-value">${distance.toFixed(2)} <small>m</small></span>
       </div>
       <div class="hud-separator"></div>
       <div class="hud-item">
         <span class="hud-label">VELOCITY</span>
-        <span class="hud-value">${velocity} <small>m/s</small></span>
+        <span class="hud-value">${velocity.toFixed(2)} <small>m/s</small></span>
       </div>
       <div class="hud-separator"></div>
       <div class="hud-item">
-        <span class="hud-label">T-MINUS (ETA)</span>
-        <span class="hud-value text-warning">${eta} <small>s</small></span>
+        <span class="hud-label">CONNECTION TIME</span>
+        <span class="hud-value text-warning">${eta.toFixed(1)} <small>s</small></span>
       </div>
       <div class="hud-separator"></div>
       <div class="hud-item status-blink">
         <span class="hud-label">STATUS</span>
-        <span class="hud-value text-success">APPROACHING</span>
+        <span class="hud-value text-success">DOCKING</span>
       </div>
     `;
 
