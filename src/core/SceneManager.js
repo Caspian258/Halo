@@ -107,25 +107,44 @@ export class SceneManager {
           }
           
           if (mesh.metadata && (mesh.metadata.parentModule || mesh.metadata.isHub)) {
-            const moduleData = mesh.metadata.parentModule || {
-              name: "Hub Central",
-              type: "HUB_NODE",
-              mesh: mesh
-            };
-            
-            if (this.uiManager) {
-              this.uiManager.showModuleInfo(moduleData);
-            }
+            this.handleModuleClick(mesh);
             return;
           }
         }
         if (this.uiManager) {
           this.uiManager.hide();
         }
+        // Deseleccionar en el grafo 2D
+        if (this.graphVisualizer) {
+          this.graphVisualizer.selectModule(null);
+        }
       }
     });
 
     return scene;
+  }
+
+  /**
+   * Maneja el click en un módulo (desde 3D o 2D)
+   */
+  handleModuleClick(mesh) {
+    if (!mesh) return;
+    
+    const moduleData = mesh.metadata.parentModule || {
+      name: "Hub Central",
+      type: "HUB_NODE",
+      mesh: mesh
+    };
+    
+    // Mostrar info en UIManager
+    if (this.uiManager) {
+      this.uiManager.showModuleInfo(moduleData);
+    }
+    
+    // Sincronizar selección en GraphVisualizer
+    if (this.graphVisualizer) {
+      this.graphVisualizer.selectModule(mesh);
+    }
   }
 
   addModule(module) {

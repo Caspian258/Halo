@@ -325,7 +325,7 @@ export class UIManager {
         const activateBtn = document.createElement("button");
         activateBtn.id = "btn-activate";
         activateBtn.className = "btn-undock";
-        activateBtn.style.background = "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)";
+        activateBtn.style.cssText = "background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff;";
         activateBtn.innerHTML = '<i class="fa-solid fa-circle-dot"></i> MAKE ACTIVE HUB';
         activateBtn.onclick = () => {
           if (this.sceneManager?.simulationManager?.setActiveHub) {
