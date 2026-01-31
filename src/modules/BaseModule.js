@@ -176,6 +176,22 @@ export class BaseModule {
     if (this.status === "CRITICAL") return; // Ya está en fallo
 
     this.status = "CRITICAL";
+    
+    // Tipos de falla aleatorios
+    const faultTypes = [
+      { name: "VOLTAJE CRÍTICO", icon: "fa-bolt", color: "#fbbf24" },
+      { name: "TEMPERATURA ALTA", icon: "fa-temperature-high", color: "#ef4444" },
+      { name: "PRESIÓN ANORMAL", icon: "fa-gauge-high", color: "#f97316" },
+      { name: "FALLA COMUNICACIÓN", icon: "fa-wifi", color: "#06b6d4" },
+      { name: "ERROR PROCESADOR", icon: "fa-microchip", color: "#a855f7" },
+      { name: "SENSOR DAÑADO", icon: "fa-circle-exclamation", color: "#ef4444" }
+    ];
+    
+    // Seleccionar tipo de falla aleatorio
+    this.currentFault = faultTypes[Math.floor(Math.random() * faultTypes.length)];
+    
+    // Crear icono flotante sobre el módulo
+    this.createFaultIcon();
 
     // Guardar color emisivo original
     if (this.mesh?.material) {
@@ -197,6 +213,103 @@ export class BaseModule {
       }, 100);
     }
   }
+  
+  createFaultIcon() {
+    if (!this.mesh || !this.currentFault) return;
+    
+    // Crear elemento HTML para el icono flotante
+    const icon = document.createElement('div');
+    icon.className = 'fault-icon';
+    icon.innerHTML = `
+      <div style="
+        position: fixed;
+        z-index: 1000;
+        pointer-events: none;
+        animation: float 2s ease-in-out infinite;
+      ">
+        <div style="
+          background: ${this.currentFault.color};
+          color: white;
+          padding: 8px 12px;
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+          border: 2px solid white;
+        ">
+          <i class="fa-solid ${this.currentFault.icon}" style="font-size: 14px;"></i>
+          <span>${this.currentFault.name}</span>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(icon);
+    this.faultIconElement = icon;
+    
+    // Agregar animación CSS si no existe
+    if (!document.getElementById('fault-animation-style')) {
+      const style = document.createElement('style');
+      style.id = 'fault-animation-style';
+      style.textContent = `
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    // Actualizar posición del icono en cada frame
+    this.updateFaultIconPosition();
+  }
+  
+  updateFaultIconPosition() {
+    if (!this.faultIconElement || !this.mesh || !this.scene) return;
+    
+    const updatePosition = () => {
+      if (!this.faultIconElement || this.status !== "CRITICAL") return;
+      
+      // Obtener posición 3D del módulo
+      const position = this.mesh.position.clone();
+      position.y += 2; // Offset arriba del módulo
+      
+      // Convertir a coordenadas de pantalla
+      const engine = this.scene.getEngine();
+      const camera = this.scene.activeCamera;
+      
+      if (camera && engine) {
+        const worldMatrix = BABYLON.Matrix.Identity();
+        const transformMatrix = camera.getViewMatrix().multiply(camera.getProjectionMatrix());
+        const viewport = camera.viewport.toGlobal(
+          engine.getRenderWidth(),
+          engine.getRenderHeight()
+        );
+        
+        const screenPos = BABYLON.Vector3.Project(
+          position,
+          worldMatrix,
+          transformMatrix,
+          viewport
+        );
+        
+        // Actualizar posición del elemento HTML
+        const iconDiv = this.faultIconElement.firstElementChild;
+        if (iconDiv && screenPos.z > 0 && screenPos.z < 1) {
+          iconDiv.style.left = `${screenPos.x}px`;
+          iconDiv.style.top = `${screenPos.y}px`;
+          iconDiv.style.transform = 'translate(-50%, -100%)';
+        }
+      }
+      
+      requestAnimationFrame(updatePosition);
+    };
+    
+    updatePosition();
+  }
 
   repair() {
     if (this.status !== "CRITICAL") return false;
@@ -213,6 +326,14 @@ export class BaseModule {
     if (this.mesh?.material && this.originalEmissive) {
       this.mesh.material.emissiveColor = this.originalEmissive.clone();
     }
+    
+    // Eliminar icono de falla
+    if (this.faultIconElement) {
+      this.faultIconElement.remove();
+      this.faultIconElement = null;
+    }
+    
+    this.currentFault = null;
 
     return true;
   }
