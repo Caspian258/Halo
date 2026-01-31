@@ -71,6 +71,13 @@ document.getElementById("btn-sim-fault")?.addEventListener("click", () => {
   }
 });
 
+document.getElementById("btn-open-graph")?.addEventListener("click", () => {
+  const modal = document.getElementById("graph-modal");
+  if (modal) {
+    modal.style.display = "flex";
+  }
+});
+
 document.getElementById("btn-close-graph")?.addEventListener("click", () => {
   const modal = document.getElementById("graph-modal");
   if (modal) {
