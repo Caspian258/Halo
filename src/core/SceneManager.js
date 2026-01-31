@@ -86,6 +86,29 @@ export class SceneManager {
     hubCap.parent = hubBody;
     hubCap.position.y = 0.55;
 
+    // Agregar patitas al hub (6 patas mecánicas)
+    const legMat = new BABYLON.StandardMaterial("hubLegMat", scene);
+    legMat.diffuseColor = new BABYLON.Color3(1, 1, 1); // Blanco puro
+    legMat.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5); // Brillo metálico
+    legMat.specularPower = 32;
+
+    for (let i = 0; i < 6; i++) {
+      const angle = (i * 60) * (Math.PI / 180); // 0°, 60°, 120°, 180°, 240°, 300°
+      const radius = 1.3; // Distancia desde el centro a las esquinas del hexágono
+      
+      const leg = BABYLON.MeshBuilder.CreateCylinder(`hubLeg${i}`, {
+        diameter: 0.2,
+        height: 0.4,
+        tessellation: 8
+      }, scene);
+      
+      leg.parent = hubBody;
+      leg.position.x = Math.cos(angle) * radius;
+      leg.position.z = Math.sin(angle) * radius;
+      leg.position.y = -0.55; // Debajo del cuerpo
+      leg.material = legMat;
+    }
+
     if (!hubBody.metadata) hubBody.metadata = {};
     hubBody.metadata.isHub = true;
     hubBody.metadata.parentModule = {
