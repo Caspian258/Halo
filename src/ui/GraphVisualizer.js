@@ -1,7 +1,7 @@
 /**
  * GraphVisualizer.js
- * Digital Twin Navigation Graph - Visualizador 2D de la topología de la estación
- * Basado en el algoritmo "Edge-Connected Modular Orbital Assembly"
+ * Digital Twin Navigation Graph - 2D visualizer of station topology
+ * Based on "Edge-Connected Modular Orbital Assembly" algorithm
  */
 
 export class GraphVisualizer {
@@ -27,12 +27,12 @@ export class GraphVisualizer {
     this.selectedModule = null;
     this.pathToSelected = [];
     
-    // Sistema de agentes virtuales para animación 2D
+    // Virtual agents system for 2D animation
     this.virtualAgents = [];
-    this.completedModules = new Map(); // Guardar info de módulos completados
-    this.dockedModules = new Set(); // IDs de módulos que han acoplado (100%)
+    this.completedModules = new Map(); // Save info of completed modules
+    this.dockedModules = new Set(); // IDs of modules that have docked (100%)
     
-    // Constantes de física HCW simplificada
+    // Simplified HCW physics constants
     this.DT = 0.05;
     this.N = 0.05;
     this.KP = 0.9;
@@ -132,7 +132,7 @@ export class GraphVisualizer {
   }
   
   /**
-   * Actualiza los agentes virtuales
+   * Updates virtual agents
    */
   updateVirtualAgents() {
     this.virtualAgents = this.virtualAgents.filter(agent => {
@@ -145,19 +145,19 @@ export class GraphVisualizer {
       const dr = Math.hypot(agent.pos.x - tx, agent.pos.y - ty);
       const dv = Math.hypot(agent.vel.x, agent.vel.y);
       
-      // Actualizar progreso (distancia actual vs inicial)
+      // Update progress (current distance vs initial)
       agent.currentDistance = dr;
       const currentProgress = Math.max(0, Math.min(100, ((agent.initialDistance - dr) / agent.initialDistance) * 100));
-      // El progreso solo sube, nunca baja
+      // Progress only goes up, never down
       agent.maxProgress = Math.max(agent.maxProgress, currentProgress);
       agent.progress = agent.maxProgress;
       
-      // Verificar si ha acoplado
+      // Check if docked
       if (dr < this.DOCK_R && dv < this.DOCK_V) {
         agent.docked = true;
-        agent.progress = 100; // Asegurar 100% al acoplar
+        agent.progress = 100; // Ensure 100% on docking
         
-        // Guardar en completados para mantener en UI
+        // Save in completed to keep in UI
         this.completedModules.set(agent.id, {
           name: agent.name,
           progress: 100,
@@ -165,20 +165,20 @@ export class GraphVisualizer {
           timestamp: Date.now()
         });
         
-        // Marcar como acoplado permanentemente
+        // Mark as permanently docked
         this.dockedModules.add(agent.id);
         
         return false;
       }
       
-      // Aplicar control
+      // Apply control
       const thrust = this.computeControl(agent);
       this.propagate(agent, thrust);
       
       return true;
     });
     
-    // Limpiar módulos completados después de 3 segundos
+    // Clean completed modules after 3 seconds
     const now = Date.now();
     this.completedModules.forEach((data, key) => {
       if (now - data.timestamp > 3000) {
@@ -223,7 +223,7 @@ export class GraphVisualizer {
       `;
     });
     
-    // Mostrar módulos completados recientemente
+    // Show recently completed modules
     this.completedModules.forEach((data, key) => {
       html += `
         <div style="margin-bottom: 12px; opacity: 0.7;">
@@ -235,7 +235,7 @@ export class GraphVisualizer {
             <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #10b981 0%, #059669 100%);"></div>
           </div>
           <div style="color: #10b981; font-size: 9px; margin-top: 2px;">
-            ACOPLADO
+            DOCKED
           </div>
         </div>
       `;
@@ -245,7 +245,7 @@ export class GraphVisualizer {
   }
   
   /**
-   * Construye el grafo de conectividad desde SimulationManager.modules
+   * Builds connectivity graph from SimulationManager.modules
    */
   buildGraph() {
     this.graph.clear();
@@ -253,27 +253,27 @@ export class GraphVisualizer {
     const modules = this.simulationManager.modules;
     if (!modules || modules.length === 0) return;
     
-    // El hub central siempre es el primer elemento (ID 0)
+    // Central hub is always first element (ID 0)
     const centralHub = modules[0];
     if (!centralHub || !centralHub.mesh) return;
     
     const hubId = this.getModuleId(centralHub.mesh);
     this.graph.set(hubId, []);
     
-    // Solo conectar cada módulo con el hub central (sin conexiones módulo-módulo)
+    // Only connect each module with central hub (no module-to-module connections)
     modules.forEach((mod, idx) => {
-      if (idx === 0 || !mod.mesh) return; // Saltar el hub mismo
+      if (idx === 0 || !mod.mesh) return; // Skip hub itself
       
       const modId = this.getModuleId(mod.mesh);
       const dist = BABYLON.Vector3.Distance(centralHub.mesh.position, mod.mesh.position);
       
-      // Si el módulo está cerca del hub (< 3.0 unidades)
+      // If module is close to hub (< 3.0 units)
       if (dist < 3.0) {
         if (!this.graph.has(modId)) {
           this.graph.set(modId, []);
         }
         
-        // Conexión bidireccional hub-módulo
+        // Bidirectional hub-module connection
         if (!this.graph.get(hubId).includes(modId)) {
           this.graph.get(hubId).push(modId);
         }
@@ -285,14 +285,14 @@ export class GraphVisualizer {
   }
   
   /**
-   * Obtiene un ID único del módulo desde su mesh
+   * Gets unique ID from module's mesh
    */
   getModuleId(mesh) {
     return mesh.uniqueId || mesh.id || mesh.name;
   }
   
   /**
-   * Algoritmo de pathfinding (BFS) desde el hub central hasta el módulo seleccionado
+   * Pathfinding algorithm (BFS) from central hub to selected module
    */
   findPath(targetId) {
     if (!this.graph.size) return [];
@@ -324,11 +324,11 @@ export class GraphVisualizer {
       }
     }
     
-    return []; // No se encontró ruta
+    return []; // No path found
   }
   
   /**
-   * Selecciona un módulo y calcula la ruta
+   * Selects a module and calculates path
    */
   selectModule(mesh) {
     if (!mesh) {
@@ -504,15 +504,15 @@ export class GraphVisualizer {
     const cx = this.canvas.width / 2;
     const cy = this.canvas.height / 2;
     
-    // Actualizar agentes virtuales
+    // Update virtual agents
     this.updateVirtualAgents();
     
-    // Actualizar offset de cámara (centrar en hub)
+    // Update camera offset (center on hub)
     const center = this.calculateStationCenter();
     this.targetOffset.x = center.x;
     this.targetOffset.y = center.y;
     
-    // Animación suave de cámara y zoom
+    // Smooth camera and zoom animation
     const lerp = 0.1;
     this.cameraOffset.x += (this.targetOffset.x - this.cameraOffset.x) * lerp;
     this.cameraOffset.y += (this.targetOffset.y - this.cameraOffset.y) * lerp;
@@ -547,7 +547,7 @@ export class GraphVisualizer {
       }
     });
     
-    // 2. Dibujar módulos
+    // 2. Draw modules
     modules.forEach(mod => {
       if (!mod.mesh) return;
       
@@ -560,7 +560,7 @@ export class GraphVisualizer {
       if (isHub) {
         color = this.colors.hub;
       } else {
-        // Módulos: gris si no están acoplados, azul si están acoplados
+        // Modules: gray if not docked, blue if docked
         color = isDocked ? this.colors.module : this.colors.approaching;
       }
       
@@ -568,7 +568,7 @@ export class GraphVisualizer {
       
       if (isSelected) {
         color = this.colors.selected;
-        // Dibujar anillo pulsante
+        // Draw pulsing ring
         this.ctx.strokeStyle = this.colors.selected;
         this.ctx.lineWidth = 3;
         this.ctx.beginPath();
@@ -578,25 +578,25 @@ export class GraphVisualizer {
       
       this.drawHex(pos.x, pos.y, size, color, false);
       
-      // Dibujar punto central
+      // Draw center point
       this.ctx.fillStyle = color;
       this.ctx.beginPath();
       this.ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
       this.ctx.fill();
     });
     
-    // 3.5 Dibujar agentes virtuales en aproximación
+    // 3.5 Draw virtual agents in approach
     this.virtualAgents.forEach(agent => {
       const x = cx + (agent.pos.x - this.cameraOffset.x) * this.scale;
       const y = cy + (agent.pos.y - this.cameraOffset.y) * this.scale;
       
-      // Dibujar hexágono en movimiento
+      // Draw moving hexagon
       const color = agent.isHub ? this.colors.hub : this.colors.approaching;
       const size = agent.isHub ? this.hubSize : this.hexSize;
       
       this.drawHex(x, y, size, color, false);
       
-      // Dibujar estela de movimiento
+      // Draw movement trail
       const vx = agent.vel.x * this.scale * 5;
       const vy = agent.vel.y * this.scale * 5;
       
@@ -610,34 +610,34 @@ export class GraphVisualizer {
       }
     });
     
-    // 4. Dibujar información de texto
+    // 4. Draw text information
     this.ctx.fillStyle = "#00ffff";
     this.ctx.font = "10px 'JetBrains Mono', monospace";
-    this.ctx.fillText(`NODOS: ${modules.length}`, 8, 15);
-    this.ctx.fillText(`ENLACES: ${this.countConnections()}`, 8, 28);
+    this.ctx.fillText(`NODES: ${modules.length}`, 8, 15);
+    this.ctx.fillText(`LINKS: ${this.countConnections()}`, 8, 28);
     this.ctx.fillText(`ZOOM: ${this.scale.toFixed(0)}x`, 8, 41);
-    this.ctx.fillText(`EN RUTA: ${this.virtualAgents.length}`, 8, 54);
+    this.ctx.fillText(`EN ROUTE: ${this.virtualAgents.length}`, 8, 54);
     
     if (this.selectedModule) {
-      const name = this.selectedModule.metadata?.parentModule?.name || "Módulo";
+      const name = this.selectedModule.metadata?.parentModule?.name || "Module";
       this.ctx.fillText(`SEL: ${name}`, 8, 67);
     }
     
-    // Instrucciones
+    // Instructions
     this.ctx.fillStyle = "#64748b";
     this.ctx.font = "9px 'JetBrains Mono', monospace";
-    this.ctx.fillText(`Click HUB: Zoom | Rueda: ±Zoom`, 8, this.canvas.height - 8);
+    this.ctx.fillText(`Click HUB: Zoom | Wheel: ±Zoom`, 8, this.canvas.height - 8);
   }
   
   /**
-   * Cuenta el número total de conexiones
+   * Counts total number of connections
    */
   countConnections() {
     let total = 0;
     this.graph.forEach(neighbors => {
       total += neighbors.length;
     });
-    return Math.floor(total / 2); // Cada conexión se cuenta dos veces
+    return Math.floor(total / 2); // Each connection counted twice
   }
   
   /**

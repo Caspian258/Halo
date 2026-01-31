@@ -162,7 +162,7 @@ export class BaseModule {
         this.mesh.position = targetPosition.clone();
         this.isDocked = true;
         
-        // Llamar al callback si existe
+        // Call callback if it exists
         if (onLandingComplete) {
           onLandingComplete();
         }
@@ -173,27 +173,27 @@ export class BaseModule {
   }
 
   triggerFault() {
-    if (this.status === "CRITICAL") return; // Ya está en fallo
+    if (this.status === "CRITICAL") return; // Already in fault
 
     this.status = "CRITICAL";
     
-    // Tipos de falla aleatorios
+    // Random fault types
     const faultTypes = [
-      { name: "VOLTAJE CRÍTICO", icon: "fa-bolt", color: "#fbbf24" },
-      { name: "TEMPERATURA ALTA", icon: "fa-temperature-high", color: "#ef4444" },
-      { name: "PRESIÓN ANORMAL", icon: "fa-gauge-high", color: "#f97316" },
-      { name: "FALLA COMUNICACIÓN", icon: "fa-wifi", color: "#06b6d4" },
-      { name: "ERROR PROCESADOR", icon: "fa-microchip", color: "#a855f7" },
-      { name: "SENSOR DAÑADO", icon: "fa-circle-exclamation", color: "#ef4444" }
+      { name: "CRITICAL VOLTAGE", icon: "fa-bolt", color: "#fbbf24" },
+      { name: "HIGH TEMPERATURE", icon: "fa-temperature-high", color: "#ef4444" },
+      { name: "ABNORMAL PRESSURE", icon: "fa-gauge-high", color: "#f97316" },
+      { name: "COMMUNICATION FAILURE", icon: "fa-wifi", color: "#06b6d4" },
+      { name: "PROCESSOR ERROR", icon: "fa-microchip", color: "#a855f7" },
+      { name: "DAMAGED SENSOR", icon: "fa-circle-exclamation", color: "#ef4444" }
     ];
     
-    // Seleccionar tipo de falla aleatorio
+    // Select random fault type
     this.currentFault = faultTypes[Math.floor(Math.random() * faultTypes.length)];
     
-    // Crear icono flotante sobre el módulo
+    // Create floating icon above module
     this.createFaultIcon();
 
-    // Guardar color emisivo original
+    // Save original emissive color
     if (this.mesh?.material) {
       this.originalEmissive = this.mesh.material.emissiveColor.clone();
 
@@ -217,7 +217,7 @@ export class BaseModule {
   createFaultIcon() {
     if (!this.mesh || !this.currentFault) return;
     
-    // Crear elemento HTML para el icono flotante
+    // Create HTML element for floating icon
     const icon = document.createElement('div');
     icon.className = 'fault-icon';
     icon.innerHTML = `
@@ -250,7 +250,7 @@ export class BaseModule {
     document.body.appendChild(icon);
     this.faultIconElement = icon;
     
-    // Agregar animación CSS si no existe
+    // Add CSS animation if it doesn't exist
     if (!document.getElementById('fault-animation-style')) {
       const style = document.createElement('style');
       style.id = 'fault-animation-style';
@@ -263,7 +263,7 @@ export class BaseModule {
       document.head.appendChild(style);
     }
     
-    // Actualizar posición del icono en cada frame
+    // Update icon position every frame
     this.updateFaultIconPosition();
   }
   
@@ -273,11 +273,11 @@ export class BaseModule {
     const updatePosition = () => {
       if (!this.faultIconElement || this.status !== "CRITICAL") return;
       
-      // Obtener posición 3D del módulo
+      // Get 3D position of module
       const position = this.mesh.position.clone();
-      position.y += 2; // Offset arriba del módulo
+      position.y += 2; // Offset above module
       
-      // Convertir a coordenadas de pantalla
+      // Convert to screen coordinates
       const engine = this.scene.getEngine();
       const camera = this.scene.activeCamera;
       
@@ -296,7 +296,7 @@ export class BaseModule {
           viewport
         );
         
-        // Actualizar posición del elemento HTML
+        // Update HTML element position
         const iconDiv = this.faultIconElement.firstElementChild;
         if (iconDiv && screenPos.z > 0 && screenPos.z < 1) {
           iconDiv.style.left = `${screenPos.x}px`;
@@ -316,18 +316,18 @@ export class BaseModule {
 
     this.status = "NOMINAL";
 
-    // Detener animación de parpadeo
+    // Stop blink animation
     if (this.faultBlinkInterval) {
       clearInterval(this.faultBlinkInterval);
       this.faultBlinkInterval = null;
     }
 
-    // Restaurar color emisivo original
+    // Restore original emissive color
     if (this.mesh?.material && this.originalEmissive) {
       this.mesh.material.emissiveColor = this.originalEmissive.clone();
     }
     
-    // Eliminar icono de falla
+    // Remove fault icon
     if (this.faultIconElement) {
       this.faultIconElement.remove();
       this.faultIconElement = null;

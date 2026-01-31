@@ -6,7 +6,7 @@ export class UIManager {
 
     if (!this.inspectorPanel || !this.inspectorData || !this.logContent) {
       console.warn(
-        "UIManager: Algunos elementos del DOM no se encontraron. Verificando..."
+        "UIManager: Some DOM elements were not found. Verifying..."
       );
     }
 
@@ -25,11 +25,11 @@ export class UIManager {
     const canvas = document.getElementById("mini-view");
     
     if (!canvas) {
-      console.error("Canvas #mini-view no encontrado");
+      console.error("Canvas #mini-view not found");
       return;
     }
     
-    // Crear motor exclusivo para el preview
+    // Create exclusive engine for preview
     this.previewEngine = new BABYLON.Engine(canvas, true, { 
       preserveDrawingBuffer: true, 
       stencil: true 
@@ -87,15 +87,15 @@ export class UIManager {
   }
 
   switchTab(tabName) {
-    // Ocultar todos los contenidos de tabs
+    // Hide all tab contents
     const dataTab = document.getElementById('tab-content-data');
     const visualTab = document.getElementById('tab-content-visual');
     
-    // Obtener botones
+    // Get buttons
     const tabBtns = document.querySelectorAll('.tab-btn');
     
     if (tabName === 'data') {
-      // Mostrar telemetría
+      // Show telemetry
       if (dataTab) {
         dataTab.style.display = 'block';
         dataTab.classList.add('active');
@@ -205,7 +205,7 @@ export class UIManager {
     
     container.appendChild(toast);
     
-    // Remover después de 5 segundos
+    // Remove after 5 seconds
     setTimeout(() => {
       if (toast.parentNode) {
         toast.parentNode.removeChild(toast);
@@ -218,17 +218,17 @@ export class UIManager {
 
     this.selectedModule = module;
     
-    // Mostrar panel inspector
+    // Show inspector panel
     const panel = document.getElementById('inspector-panel');
     if (panel) {
       panel.style.display = 'block';
     }
 
-    // Generar ID único del módulo (si no existe, usar timestamp)
+    // Generate unique module ID (if doesn't exist, use timestamp)
     const moduleId = module.id || `MOD-${Date.now().toString(36).toUpperCase()}`;
     if (!module.id) module.id = moduleId;
 
-    // Determinar estado con color
+    // Determine status with color
     const status = module.stats?.status || "unknown";
     const moduleStatus = module.status || "NOMINAL";
     let statusClass = "status-nominal";
@@ -248,108 +248,108 @@ export class UIManager {
       statusText = "DEPARTING";
     }
 
-    // Telemetría
+    // Telemetry
     const temp = module.temperature || 50;
     const cpu = module.cpuLoad || 25;
     const efficiency = module.efficiency || 95;
     const power = module.powerDraw || 12.5;
 
-    // Inyectar HTML SOLO en #inspector-data
+    // Inject HTML ONLY in #inspector-data
     const inspectorData = document.getElementById('inspector-data');
     if (inspectorData) {
-      // Obtener color del módulo para el tipo
+      // Get module color for type
       const moduleColor = module.mesh?.material?.diffuseColor?.toHexString() || '#94a3b8';
       
-      // Determinar color de estado
+      // Determine status color
       const statusColor = moduleStatus === 'CRITICAL' ? '#ef4444' : '#4ade80';
       const statusGlow = moduleStatus === 'CRITICAL' ? '#ef4444' : '#4ade8033';
       
       inspectorData.innerHTML = `
         <div class="info-grid">
-          <div class="section-title">IDENTIDAD DEL SISTEMA</div>
+          <div class="section-title">SYSTEM IDENTITY</div>
           <div class="data-row">
-            <span class="label">Tipo de Módulo</span>
-            <span class="value" style="color: ${moduleColor}">${module.name || 'Desconocido'}</span>
+            <span class="label">Module Type</span>
+            <span class="value" style="color: ${moduleColor}">${module.name || 'Unknown'}</span>
           </div>
           <div class="data-row">
-            <span class="label">Etiqueta ID</span>
+            <span class="label">ID Label</span>
             <span class="value mono">${moduleId.substring(0, 18)}...</span>
           </div>
           <div class="data-row">
-            <span class="label">Estado</span>
+            <span class="label">Status</span>
             <span class="value" style="color: ${statusColor}; text-shadow: 0 0 5px ${statusGlow};">
-              ● ${moduleStatus === 'OPERATIONAL' ? 'OPERACIONAL' : moduleStatus === 'CRITICAL' ? 'CRÍTICO' : moduleStatus}
+              ● ${moduleStatus === 'OPERATIONAL' ? 'OPERATIONAL' : moduleStatus === 'CRITICAL' ? 'CRITICAL' : moduleStatus}
             </span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-boxes-stacked"></i> Recursos</span>
+            <span class="label"><i class="fa-solid fa-boxes-stacked"></i> Resources</span>
             <span class="value" id="module-resources">${module.resourcesGenerated || 0}</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-industry"></i> Producción</span>
-            <span class="value">${module.stats?.production || 0}/seg</span>
+            <span class="label"><i class="fa-solid fa-industry"></i> Production</span>
+            <span class="value">${module.stats?.production || 0}/sec</span>
           </div>
 
-          <div class="section-title">MÉTRICAS DE RENDIMIENTO</div>
+          <div class="section-title">PERFORMANCE METRICS</div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-temperature-half"></i> Temperatura</span>
+            <span class="label"><i class="fa-solid fa-temperature-half"></i> Temperature</span>
             <span class="value"><span id="val-temp">${temp.toFixed(1)}</span> °C</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-microchip"></i> Carga CPU</span>
+            <span class="label"><i class="fa-solid fa-microchip"></i> CPU Load</span>
             <span class="value"><span id="val-cpu">${cpu.toFixed(1)}</span> %</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-gauge-high"></i> Eficiencia</span>
+            <span class="label"><i class="fa-solid fa-gauge-high"></i> Efficiency</span>
             <span class="value"><span id="val-eff">${efficiency.toFixed(1)}</span> %</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-bolt"></i> Consumo Energético</span>
+            <span class="label"><i class="fa-solid fa-bolt"></i> Power Consumption</span>
             <span class="value"><span id="val-power">${power.toFixed(1)}</span> kW</span>
           </div>
           <div class="data-row">
-            <span class="label"><i class="fa-solid fa-shield-halved"></i> Integridad</span>
+            <span class="label"><i class="fa-solid fa-shield-halved"></i> Integrity</span>
             <span class="value">100%</span>
           </div>
         </div>
       `;
 
-      // Contenedor para botones de acción
+      // Container for action buttons
       const actionsDiv = document.createElement('div');
       actionsDiv.style.cssText = 'margin-top: 20px; padding: 16px; padding-top: 10px; border-top: 1px solid #334155;';
 
-      // Botón especial para Hub Expansion (MAKE ACTIVE HUB)
-      // SOLO mostrar si es realmente un HUB (HUB_NODE o Central Hub)
+      // Special button for Hub Expansion (MAKE ACTIVE HUB)
+      // ONLY show if it's really a HUB (HUB_NODE or Central Hub)
       const isHub = module.type === "HUB_NODE" || module.mesh?.metadata?.isHub === true;
       if (isHub) {
         const activateBtn = document.createElement("button");
         activateBtn.id = "btn-activate";
         activateBtn.className = "btn-undock";
         activateBtn.style.cssText = 'width: 100%; margin-bottom: 8px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff;';
-        activateBtn.innerHTML = `<i class="fa-solid fa-circle-dot"></i> ACTIVAR COMO HUB`;
+        activateBtn.innerHTML = `<i class="fa-solid fa-circle-dot"></i> ACTIVATE AS HUB`;
         activateBtn.onclick = () => {
           if (this.sceneManager?.simulationManager?.setActiveHub) {
-            // Pasar el objeto módulo completo
+            // Pass complete module object
             this.sceneManager.simulationManager.setActiveHub(module);
           }
         };
         actionsDiv.appendChild(activateBtn);
       }
 
-      // Agregar botón de remover módulo (solo para módulos, no para hubs)
+      // Add remove module button (only for modules, not for hubs)
       if (!isHub && module.mesh) {
-        // Botón de reparar (solo si está en CRITICAL)
+        // Repair button (only if in CRITICAL status)
         if (module.status === "CRITICAL") {
           const repairBtn = document.createElement("button");
           repairBtn.className = "btn-undock";
-          repairBtn.innerHTML = `<i class="fa-solid fa-wrench"></i> REPARAR MÓDULO`;
+          repairBtn.innerHTML = `<i class="fa-solid fa-wrench"></i> REPAIR MODULE`;
           repairBtn.style.cssText = 'width: 100%; margin-bottom: 8px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff;';
           repairBtn.onclick = () => {
             if (module.repair) {
               module.repair();
-              this.log(`✅ Módulo reparado: ${module.name}`, "SUCCESS");
-              this.showWarningToast("Módulo reparado exitosamente");
-              // Actualizar el inspector
+              this.log(`✅ Module repaired: ${module.name}`, "SUCCESS");
+              this.showWarningToast("Module repaired successfully");
+              // Update inspector
               this.showModuleInfo(module);
             }
           };
@@ -358,22 +358,22 @@ export class UIManager {
         
         const removeBtn = document.createElement("button");
         removeBtn.className = "btn-undock";
-        removeBtn.innerHTML = `<i class="fa-solid fa-eject"></i> REMOVER MÓDULO`;
+        removeBtn.innerHTML = `<i class="fa-solid fa-eject"></i> REMOVE MODULE`;
         removeBtn.style.cssText = 'width: 100%; margin-bottom: 8px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff;';
         removeBtn.onclick = () => {
           if (this.sceneManager?.simulationManager?.undockModule) {
             this.sceneManager.simulationManager.undockModule(module);
-            this.hide(); // Cerrar panel
+            this.hide(); // Close panel
           }
         };
         actionsDiv.appendChild(removeBtn);
       }
 
-      // Agregar botón de desacople si hay callback (compatibilidad con código antiguo)
+      // Add undock button if callback exists (compatibility with old code)
       if (onUndockCallback && status === "docked") {
         const undockBtn = document.createElement("button");
         undockBtn.className = "btn-undock";
-        undockBtn.innerHTML = `<i class="fa-solid fa-rocket"></i> DESACOPLAR MÓDULO`;
+        undockBtn.innerHTML = `<i class="fa-solid fa-rocket"></i> UNDOCK MODULE`;
         undockBtn.style.cssText = 'width: 100%; margin-bottom: 8px;';
         undockBtn.onclick = () => {
           onUndockCallback();
@@ -381,13 +381,13 @@ export class UIManager {
         actionsDiv.appendChild(undockBtn);
       }
       
-      // Agregar contenedor de acciones al inspector solo si tiene botones
+      // Add actions container to inspector only if it has buttons
       if (actionsDiv.children.length > 0) {
         inspectorData.appendChild(actionsDiv);
       }
     }
     
-    // Actualizar visor 3D
+    // Update 3D viewer
     this.updatePreview(module);
   }
 
@@ -400,18 +400,18 @@ export class UIManager {
     
     if (!module || !module.mesh || !this.previewScene) return;
     
-    // Obtener color del módulo
+    // Get module color
     const moduleColor = module.mesh.material?.diffuseColor || new BABYLON.Color3(0.5, 0.5, 0.5);
     
-    // Recrear geometría visual en la escena de preview
-    // 1. Cuerpo
+    // Recreate visual geometry in preview scene
+    // 1. Body
     const body = BABYLON.MeshBuilder.CreateCylinder("previewBody", {
       diameter: 3,
       height: 0.7,
       tessellation: 6
     }, this.previewScene);
     
-    // 2. Anillo separador
+    // 2. Separator ring
     const ring = BABYLON.MeshBuilder.CreateCylinder("previewRing", {
       diameter: 3.1,
       height: 0.05,
@@ -425,7 +425,7 @@ export class UIManager {
     ringMat.specularColor = new BABYLON.Color3(0.05, 0.05, 0.05);
     ring.material = ringMat;
     
-    // 3. Cúpula
+    // 3. Dome
     const cap = BABYLON.MeshBuilder.CreateCylinder("previewCap", {
       diameterTop: 1.5,
       diameterBottom: 3,
@@ -435,7 +435,7 @@ export class UIManager {
     cap.parent = body;
     cap.position.y = 0.55;
     
-    // 4. Patas (tren de aterrizaje)
+    // 4. Legs (landing gear)
     const legMat = new BABYLON.StandardMaterial("previewLegMat", this.previewScene);
     legMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
     legMat.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
@@ -457,17 +457,17 @@ export class UIManager {
       leg.material = legMat;
     }
     
-    // Material del cuerpo y cúpula (usa el color del módulo)
+    // Body and dome material (uses module color)
     const mat = new BABYLON.StandardMaterial("previewMat", this.previewScene);
     mat.diffuseColor = moduleColor.clone();
     mat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
     body.material = mat;
     cap.material = mat;
     
-    // Guardar referencia al mesh principal
+    // Save reference to main mesh
     this.previewMesh = body;
     
-    // Iniciar render loop si estaba parado
+    // Start render loop if stopped
     if (this.previewEngine && !this.previewEngine.isRunning) {
       this.previewEngine.runRenderLoop(() => {
         this.previewScene.render();

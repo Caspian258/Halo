@@ -58,7 +58,7 @@ export class SceneManager {
       scene
     );
     hubBody.position = new BABYLON.Vector3(0, 0, 0);
-    hubBody.rotation.y = Math.PI / 3; // 30 grados (igual que los módulos)
+    hubBody.rotation.y = Math.PI / 3; // 30 degrees (same as modules)
     
     const hubMat = new BABYLON.StandardMaterial("hubMat", scene);
     hubMat.diffuseColor = BABYLON.Color3.FromHexString("#e2e8f0");
